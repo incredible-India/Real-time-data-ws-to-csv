@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Time data</title>
+</head>
+<body>
+    <div class="data">
+
+    </div>
+
+<div class="datarcv" style='overflow-y: scroll;'>
+
+</div>
+
+    <script>
+
+
+
+        var sendServer  =  new WebSocket("ws://localhost:8000/ws/setdata/")
+
+        var Binance  =  new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker")
+
+
+        sendServer.onopen = function(event){
+            console.log('hello')
+            document.getElementsByClassName("data")[0].innerHTML = `
+            <h1> We are connected to server ...</h1> <br>
+            `
+
+        }   
+
+        sendServer.onerror = function(event){
+            alert('local server error')
+        }
+
+        sendServer.onclose = function(event){
+            alert('server Closed local')
+        }
+
+
+        Binance.onopen = function(event){
+            document.getElementsByClassName("data")[0].innerHTML += `
+            <h1> We are connected to Binance server ...</h1> <br>
+            `
+        }
+        Binance.onmessage = function(event)
+        {
+            document.getElementsByClassName("datarcv")[0].innerHTML += event.data + '<br>'
+
+            sendServer.send(event.data)
+        }
+
+        Binance.onerror = function(event){
+            alert('binance server error')
+        }
+
+        Binance.onclose = function(event){
+            alert('binance server close')
+        }
+
+    </script>
+</body>
+</html>
